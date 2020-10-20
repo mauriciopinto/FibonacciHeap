@@ -6,9 +6,10 @@
 #define cimg_use_jpeg 1
 #include <fstream>
 #include <iostream>
-#include <filesystem>
+#include <experimental/filesystem>
 #include <vector>
-namespace fs = std::filesystem;
+
+namespace fs = std::experimental::filesystem;
 using namespace cimg_library;
 using namespace std;
 
@@ -16,7 +17,7 @@ using namespace std;
 class Nodo{
 public:
     vector<float> vc;
-     char* nombre; //large
+     char *nombre; //large
      string name; //corto
 public:
     vector<float>  Vectorizar(CImg<float> & img ){
@@ -28,7 +29,8 @@ public:
 	}
 
     Nodo(string nom, string ruta){
-	strcpy(this->nombre, ruta.c_str());
+	nombre = new char[nom.size ()];
+	strcpy(this->nombre, nom.c_str());
 	CImg<float>   A(nombre);
 	A.resize(512, 512);
 	CImg<float>   B =  A.haar(false,3);
@@ -81,19 +83,22 @@ int main()
 
     vector<Nodo*> vecN;
     vector<Arista> vecA;
-    std::string path("/home/yoncho/Documents/Cursos_UTEC/Ciclo_6/EDA/faces/faces94");
+    std::string path("/home/mauricio/Documents/2020-2/EDA/Fibonnacci_Heap/faces94");
     std::string ext(".jpg");
     cout<<"llegue aqui";
+	int count = 0;
     for (auto &p : fs::recursive_directory_iterator(path))
-    {
+    {   if (count > 100 )
+			break;
         if (p.path().extension() == ext){
-            //std::cout << p.path().string() << '\n';
+			count++;
+            std::cout << p.path().stem ().string() << " : " << count << '\n';
 	    vecN.push_back(new Nodo(p.path().string(), p.path().stem().string()) );
 	}
     }
     int i,j;
     for (i=0; i< vecN.size()-1; i++){
-	for(j=1; i< vecN.size(); j++){
+	for(j=1; j< vecN.size(); j++){
 	    Arista AR(vecN[i], vecN[j]);
 	    vecA.push_back(AR);
 	}
