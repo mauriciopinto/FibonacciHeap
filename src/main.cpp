@@ -10,7 +10,7 @@ int main () {
   	BNode<int> *e = new BNode<int>(5);
   	BNode<int> *f = new BNode<int>(4);
   	BNode<int> *g = new BNode<int>(6);
-
+    
 	  BNode<int> *h = new BNode<int>(7);
   	BNode<int> *i = new BNode<int>(0);
   	BNode<int> *j = new BNode<int>(9);
@@ -32,5 +32,13 @@ int main () {
   	z.Print();
     z.DeleteMin ();
     z.Print();
-	z.GenerateGraph ();
+    z.DecreaseKey (h, 0);
+    z.DecreaseKey(k, -1);
+    z.Print();
+    //z.Insert(d);
+   // z.DeleteMin();
+    //z.Print();
+   
+	
+	z.GenerateGraph ();		
 }

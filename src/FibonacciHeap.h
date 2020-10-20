@@ -92,47 +92,56 @@ public:
   }
 
 	void DecreaseKey (BNode<T> *node, T value) {
+    	//paso 1
+    	node->key = value;
+    	if(node->parent == nullptr)
+        	return;
 
-    //paso 1
-      node->key = value;
+      	if(value > node->parent->key)
+        	return;
 
-    //CASE 1) todo sale bien
-    if(node->parent.key < value){
-      if(min->key > value){
-        min = node;
-      }
-    }else{
-      //CASE 2) no cumple propiedad y padre no está marcado
-      if(!node->parent.black){
+        if(node->parent->black == false){
+        	auto auxParent = node->parent;
 
-          node->parent.black = true;
-          
-          auto actual = node;
-          auto aux = node->parent;
-          while(aux->parent != nullptr){
-              //recorremos hasta el root del arbol del parent
-              aux->grado -= actual->grado;
+        	//esto de abajo
+        	auxParent->children.remove(node);
 
-              aux = aux->parent;
-              actual = actual->parent;
-
-          }
-
-          node->parent = nullptr;
-
-
-      }
+        	node->parent = nullptr;
+        	if(auxParent->parent != nullptr)
+        	  auxParent->black = true;
+        	
+			auxParent->grado --;
+        	
+			if(node->black == true)
+        		node->black = false;
+        	
+			Insert(node);
+    	}
+		else if (node->parent->black == true){
+       		here:
 
 
+       		auto auxParent = node->parent;
+       		auxParent->children.remove(node);
+        	node->parent = nullptr;
+        	
+			if(auxParent->parent != nullptr)
+          		auxParent->black = true;
+			
+			auxParent->grado --;
+			
+			if(node->black == true)
+          		node->black = false;
+        	
+			Insert(node);
 
-
-
-    }
-
-
-
-
+        	if(auxParent->black == true){
+          		node = auxParent;
+          		goto here;
+        	}
+    	}
 	}
+
 private:
 	void Merge (BinomialHeap<T> H) {
 		for (auto it : H.heap_list) 
