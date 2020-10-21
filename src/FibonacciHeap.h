@@ -8,14 +8,14 @@ template<typename T>
 bool ValueCmp (BNode<T> * const a, BNode<T> *const b);
 
 template<typename T>
-class BinomialHeap {
+class FibonacciHeap {
 private:
 	int size {0};
 	list<BNode<T> *> heap_list;
 	BNode<T> *min = nullptr;
   unordered_map<int, BNode<T> *> grados;
 public:
-	BinomialHeap () {};
+	FibonacciHeap () {};
 
 	void Insert (BNode<T> *temp) {
 		if (!min || min->key >= temp->key)
@@ -35,16 +35,20 @@ public:
 	T GetMin () {
 		return min->key;
 	}
+
+	bool Empty () {
+		return size == 0 ? true : false;
+	}
 public:
 
 
-	void DeleteMin () {
+	BNode<T> *DeleteMin () {
     /*
     cout << "a" <<endl;
     min->Print();
     cout << "\na" <<endl;
     */
-    
+    	auto prevMin = min;
 		heap_list.remove (min);
 		auto aux = min->children;
 		size--;
@@ -62,7 +66,7 @@ public:
 				min = it;
 			}
 		}
-    
+    	return prevMin;
 	}
 
   BNode<T> * Search(BNode<T> * node, T value){
@@ -143,7 +147,7 @@ public:
 	}
 
 private:
-	void Merge (BinomialHeap<T> H) {
+	void Merge (FibonacciHeap<T> H) {
 		for (auto it : H.heap_list) 
 			Insert (*it);
 	}
@@ -216,7 +220,7 @@ public:
 		ofstream ofile;
 		ofile.open ("graph.gv", ios::trunc);
 
-		ofile << "digraph BinomialHeap {" << endl;
+		ofile << "digraph FibonacciHeap {" << endl;
 		ofile << "node [shape=circle];" << endl << "rankdir=LR;" << endl;
 		for (auto it = heap_list.begin (); it != heap_list.end (); it++) {
 			ofile << (*it)->key << " [color=red];" << endl;

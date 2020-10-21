@@ -1,18 +1,23 @@
-#include <vector>
-#include <string>
 #include "CImg.h"
-#include <cmath>
 #include <dirent.h>
 #define cimg_use_jpeg 1
 #include <fstream>
 #include <iostream>
 #include <experimental/filesystem>
-#include <vector>
+#include "src/FibonacciHeap.h"
+#include <bits/stdc++.h>
 
 namespace fs = std::experimental::filesystem;
 using namespace cimg_library;
 using namespace std;
 
+class Nodo;
+class Arista;
+
+struct Grafo {
+	vector<Nodo*> nodos;
+	vector<Arista> aristas;
+};
 
 class Nodo{
 public:
@@ -37,16 +42,15 @@ public:
 	CImg<float>   c  = B.crop(0,0,63,63);
 	vector<float> vec = Vectorizar(c);
 	this->vc = vec;
-	this->name=nom;
+	this->name=ruta;
     }
 };
 
 class Arista{
-private:
+public:
     Nodo* A;
     Nodo* B;
-    float distancia;
-public:
+	double distancia;
     Arista(Nodo* n1 , Nodo* n2){
 	A=n1;
 	B= n2;
@@ -64,6 +68,48 @@ public:
     }
 
 };
+
+Grafo kruskal (Grafo g) {
+	Grafo minSpan;
+	FibonacciHeap<double> q;
+	unordered_map<string, Nodo *> currentNodes;
+	vector<Arista> aristas = g.aristas;
+	
+	for (int i = 0; i < aristas.size (); i++) {
+		BNode<double> *temp = new BNode<double> (aristas[i].distancia, &aristas[i]);	
+		q.Insert (temp);
+	}
+	
+	while (!q.Empty ()) {
+		Arista current = * ((Arista *) (q.DeleteMin ()->structure));
+		if (currentNodes.find (current.A->name) != currentNodes.end () && currentNodes.find (current.B->name) != currentNodes.end ())
+				continue;
+		else {
+			if (currentNodes.find (current.A->name) == currentNodes.end ()) {
+			    pair<string, Nodo *> p(current.A->name, current.A);
+				currentNodes.insert (p);
+			}
+			if (currentNodes.find (current.B->name) == currentNodes.end ())	{
+			    pair<string, Nodo *> p(current.B->name, current.B);
+				currentNodes.insert (p);
+			}
+			minSpan.aristas.push_back (current);
+		}
+	}
+	minSpan.nodos = g.nodos;
+	return minSpan;
+}
+
+void generarGrafo (Grafo g) {
+	ofstream ofile;
+	ofile.open ("graph.gv", ios::trunc);
+	ofile << "graph Cluster {" << endl;
+	for (int i = 0; i < g.aristas.size (); i++) {
+		ofile << g.aristas[i].A->name << " -- " << g.aristas[i].B->name << ";" << endl;
+	}
+	ofile << "}" << endl;
+	ofile.close ();
+}
 
 int main()
 {
@@ -85,24 +131,28 @@ int main()
     vector<Arista> vecA;
     std::string path("/home/mauricio/Documents/2020-2/EDA/Fibonnacci_Heap/faces94");
     std::string ext(".jpg");
-    cout<<"llegue aqui";
 	int count = 0;
     for (auto &p : fs::recursive_directory_iterator(path))
-    {   if (count > 100 )
+    {   if (count > 10 )
 			break;
         if (p.path().extension() == ext){
 			count++;
             std::cout << p.path().stem ().string() << " : " << count << '\n';
 	    vecN.push_back(new Nodo(p.path().string(), p.path().stem().string()) );
-	}
+		}
     }
     int i,j;
     for (i=0; i< vecN.size()-1; i++){
-	for(j=1; j< vecN.size(); j++){
-	    Arista AR(vecN[i], vecN[j]);
-	    vecA.push_back(AR);
-	}
+		for(j=1; j< vecN.size(); j++){
+	    	Arista AR(vecN[i], vecN[j]);
+	    	vecA.push_back(AR);
+		}
     }
+	Grafo g;
+	g.nodos = vecN;
+	g.aristas = vecA;
+	Grafo minSpan = kruskal (g);
+	generarGrafo (minSpan);
     //p.path().stem().string()
     return 0;
 }

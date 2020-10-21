@@ -1,7 +1,7 @@
 #include "FibonacciHeap.h"
 
 int main () {
-		BinomialHeap<int> z;
+		FibonacciHeap<int> z;
 
 	  BNode<int> *a = new BNode<int>(10);
 	  BNode<int> *b = new BNode<int>(2);

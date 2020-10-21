@@ -9,11 +9,13 @@ protected:
 	int grado = 0;
 	T key;
 	BNode<T> *parent = nullptr;
-  bool black = false;
+  	bool black = false;
 private:
 	list<BNode<T> *> children;
 public:
+	void *structure;
 	BNode (T k) : key {k} {};
+	BNode (T k, void *s) : key {k}, structure {s} {};
 
 	int GetGrado () {
 		return grado;
@@ -40,5 +42,5 @@ public:
 		}
 	}
 
-	template<typename U> friend class BinomialHeap;
+	template<typename U> friend class FibonacciHeap;
 };
